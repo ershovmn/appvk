@@ -149,10 +149,10 @@ class Mymap extends React.Component {
             }
             this.setState(JSONmyState)
         }
-        this.setState({map: {
-            center: coords,
-            zoom: this.state.zoom
-        }})
+        // this.setState({map: {
+        //     center: coords,
+        //     zoom: this.state.zoom
+        // }})
         console.log(localStorage.getItem('token'))
         fetch('https://170e4f1c.ngrok.io/api/v1/utilities/bounds?lat=' + String(coords[0]) + '&lon=' + String(coords[1]), {
             method: 'GET',
@@ -385,14 +385,18 @@ class Mymap extends React.Component {
                                 if(str1.indexOf(str2) === -1 ) {
                                     return null
                                 }
-                                return <Cell key={index}>{value.name}</Cell>
+                                return <Cell key={index} expandable onClick={() => {console.log('test'); this.setState({map: {
+                                    center: [value.latitude, value.longitude],
+                                    zoom: 14
+                                }})}}
+                                >{value.name}</Cell>
                             })}
                             
                         </List>
                     </div>
                     <div>
                         <YMaps>
-                            <Map height='100vh' width='100%' state={{center: this.state.map.center, zoom: 14}}
+                            <Map height='100vh' width='100%' state={{center: this.state.map.center, zoom: this.state.map.zoom}}
                                 options={{
                                     restrictMapArea: this.state.restrictMapArea
                                 }}
@@ -436,83 +440,7 @@ class Mymap extends React.Component {
                         </YMaps>
                     </div>
                     <div style={{width: "100%", height: "calc(100vh - 92px)"}}>
-                        {/* <YMaps>
-                            <Map width="100%" height="100%" defaultState={{center: this.state.map.center, zoom: this.state.map.zoom }} 
-                                instanceRef={map => this.map=map}
-                                onBoundsChange={this.onBoundsChange}
-                                options={{
-                                    restrictMapArea: this.state.restrictMapArea
-                                }}
-                                //controls={['smallZoom']}
-                            >
-                                <GeolocationControl />
-                                <Clusterer 
-                                    options={{
-                                        preset: 'islands#invertedVioletClusterIcons',
-                                        //groupByCoordinates: false,
-                                    }}>
-                                    {this.state.restaurants.map((value, index) => {
-                                        var str1 = this.state.rest[value.code].name.toLowerCase()
-                                        var str2 = this.state.search.toLowerCase()
-                                        if((this.state.switchRest[value.code] && str1.indexOf(str2) !== -1) || (str1.indexOf(str2) !== -1 && str2 !== '')) {
-                                            return (
-                                                <Placemark 
-                                                    key={index}
-                                                    onClick={() => {this.openModal({
-                                                        type: 'restModalCard',
-                                                        title: this.state.rest[value.code].name,
-                                                        id: value.id
-                                                    })}}
-                                                    geometry={value.coord}
-                                                    properties={{
-                                                        iconContent: this.state.rest[value.code].name[0],
-                                                    }}
-                                                    options={{
-                                                        preset: 'islands#orangeIcon'
-                                                    }}
-                                                />
-                                            )
-                                        }
-                                        return null
-                                    })}
-                                    {this.state.foodCourts.map((value, index) => {
-                                        var count = 0
-                                        value.restaurants.forEach(element => {
-                                            var str1 = this.state.rest[element].name.toLowerCase()
-                                            var str2 = this.state.search.toLowerCase()
-                                            if((this.state.switchRest[element] && str1.indexOf(str2) !== -1) || (str1.indexOf(str2) !== -1 && str2 !== '')) {
-                                                count += 1
-                                            } 
-                                        })
-
-                                        var count1 = this.state.restaurants.length
-
-                                        if(count === 0) {
-                                            return (null)
-                                        }
-                                    
-                                        return (
-                                            <Placemark 
-                                                key = {count1 + index}
-                                                geometry={value.coord}
-                                                properties={{
-                                                    iconContent: count,
-                                                }}
-                                                options={{
-                                                    preset: 'islands#orangeIcon'
-                                                }}
-                                                onClick={() => {this.openModal({
-                                                    type: 'foodcourtModalPage',
-                                                    id: value.id,
-                                                    title: 'foodcourt'
-                                                })}}
-                                            />
-                                        )
-                                    
-                                    })}
-                                </Clusterer>
-                            </Map>
-                        </YMaps> */}
+                        
                         <div style={{position: 'fixed', bottom: '50px', right: '10px'}}>
                             {/* <img src='https://vk.com/images/stickers/94/512.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/> */}
                             <img src='http://about-telegram.ru/wp-content/uploads/2018/03/kot-persik-stickers-telegram_21.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/>

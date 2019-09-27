@@ -1,9 +1,10 @@
 import React from 'react'
 
-import {PanelHeader, View, Panel, HorizontalScroll, TabsItem, Tabs, List, ListItem, Avatar, HeaderButton, platform, IOS} from '@vkontakte/vkui';
+import {PanelHeader, View, Panel, HorizontalScroll, TabsItem, Tabs, List, Cell, Avatar, HeaderButton, platform, IOS, Button, Snackbar} from '@vkontakte/vkui';
 
 import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
 import Icon24Back from '@vkontakte/icons/dist/24/back';
+import Icon16Done from '@vkontakte/icons/dist/16/done';
 
 class Menu extends React.Component {
     constructor() {
@@ -12,8 +13,11 @@ class Menu extends React.Component {
             activePanel: 'mainMenu',
             categories: [],
             items: [],
-            currentCategory: -1
+            currentCategory: -1,
+            snackbar: null
         }
+
+        this.openBase = this.openBase.bind(this)
     }
 
     componentDidMount() {
@@ -32,6 +36,28 @@ class Menu extends React.Component {
                     this.setState({currentCategory: this.state.categories[0].id})
                 }
             } catch { } 
+        })
+    }
+
+    addToCart = (id) => {
+        fetch('https://170e4f1c.ngrok.io/api/v1/cart/push?menu_item_id=' + String(id), {
+            method: 'GET',
+            headers: {
+                'Povysh-Token': localStorage.getItem('token')
+            }
+        })
+    }
+
+    openBase = (name) => {
+        if (this.state.snackbar) return;
+        this.setState({ snackbar:
+            <Snackbar
+                layout="vertical"
+                onClose={() => this.setState({ snackbar: null })}
+                before={<Avatar size={24} ><Icon16Done fill="#fff" width={14} height={14} /></Avatar>}
+            >
+                {name + ' добавлен в корзину'}
+            </Snackbar>
         })
     }
 
@@ -72,17 +98,27 @@ class Menu extends React.Component {
                                 return null
                             }
                             return (
-                                <ListItem
+                                <Cell
                                     before={<Avatar src='https://burgerking.ru/images/product_images/mobile/cheezy-joe.png' />}
                                     description={value.description}
+                                    asideContent={
+                                        <Button 
+                                            onClick={() => {
+                                                this.addToCart(value.id)
+                                                this.openBase(value.name)
+                                            }}
+                                            style={{width: '80px'}}
+                                        >{String(value.price) + ' руб'}</Button>
+                                    }
                                 >
                                     {value.name}
-                                </ListItem>
+                                </Cell>
                             )
                         })
                         
                         }
                     </List>
+                    {this.state.snackbar}
                 </Panel>
             </View>
         )

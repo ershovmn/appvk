@@ -10,6 +10,7 @@ import Icon24Market from '@vkontakte/icons/dist/24/market';
 import Settings from './settings/Settings'
 import Mymap from './map/Mymap'
 import Tinder from './tinder/Tinder'
+import Bag from './Bag/Bag'
 
 class Start extends React.Component {
     flag_name = true
@@ -59,11 +60,11 @@ class Start extends React.Component {
                         text={this.flag_name ? 'Tinder' : null }
                     ><Icon24Like/> </TabbarItem>
                     <TabbarItem 
-                        key='basket'
+                        key='bag'
                         onClick={this.onStoryChange}
-                        selected={this.state.activeStory === 'basket'}
-                        data-story='basket'
-                        text={this.flag_name && 'basket'}
+                        selected={this.state.activeStory === 'bag'}
+                        data-story='bag'
+                        text={this.flag_name && 'Bag'}
                     >
                         <Icon24Market/>
                     </TabbarItem>
@@ -90,11 +91,12 @@ class Start extends React.Component {
                         <Settings />
                     </Panel>
                 </View>
-                <View id='basket' activePanel='basket'>
+                <Bag id='bag' />
+                {/* <View id='basket' activePanel='basket'>
                     <Panel id='basket'>
                         Basket
                     </Panel>
-                </View>
+                </View> */}
             </Epic>
         )
     }
