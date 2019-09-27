@@ -29,7 +29,7 @@ class App extends React.Component {
 		//localStorage.setItem('token', data.token)
 		//this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null})
 		//return
-		fetch('http://192.168.43.244:3000/api/v1/users/from_vk_token?token=' + token, {
+		fetch('https://31dd3131.ngrok.io/api/v1/users/from_vk_token?token=' + token, {
 				method: "GET"
 			}).then((data) => {
 				return data.json()

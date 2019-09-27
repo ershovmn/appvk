@@ -2,6 +2,7 @@ import React from 'react'
 import {PanelHeader, View, Panel, Search,  ModalCard, ModalRoot, ModalPage, ModalPageHeader, platform, IOS, HeaderButton } from '@vkontakte/vkui';
 import {List, Cell, Switch} from '@vkontakte/vkui';
 import {YMaps, Map, GeolocationControl, Clusterer, Placemark} from 'react-yandex-maps'
+import connect from '@vkontakte/vkui-connect';
 
 import Icon24Done from '@vkontakte/icons/dist/24/done'
 import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
@@ -57,6 +58,7 @@ class Mymap extends React.Component {
             search: '',
             displayMap: 'block',
             displayList: 'none',
+            restrictMapArea: [[0, 0], [60, 60]]
         }
 
         //this.select = this.select.bind(this)
@@ -87,9 +89,25 @@ class Mymap extends React.Component {
         var myState = localStorage.getItem('mapState')
         console.log(myState)
         var coords = [0, 0]
-        navigator.geolocation.getCurrentPosition((position) => {
-            coords = [position.coords.latitude, position.coords.longitude]
+
+        connect.send("VKWebAppGetGeodata", {});
+        connect.subscribe((e) => {
+            console.log(e.detail.data)
+            switch (e.detail.type) {
+                case 'VKWebAppGeodataResult':
+                    console.log(e)
+                    coords = [e.detail.data.lat, e.detail.data.long]
+                    console.log(coords)
+                    break
+                default:
+                    break
+            }
         })
+
+        // navigator.geolocation.getCurrentPosition((position) => {
+        //     console.log('geolocation')
+        //     coords = [position.coords.latitude, position.coords.longitude]
+        // })
         if(myState !== null) {
             var JSONmyState = JSON.parse(myState)
             var switchRest = JSONmyState.switchRest
@@ -106,6 +124,7 @@ class Mymap extends React.Component {
             }
         }
         else {
+            console.log('elese')
             var JSONmyState = {
                 map: {
                     center: coords,
@@ -114,10 +133,32 @@ class Mymap extends React.Component {
             }
             this.setState(JSONmyState)
         }
+        this.setState({map: {
+            center: coords,
+            zoom: this.state.zoom
+        }})
+        console.log(coords)
+        fetch('https://31dd3131.ngrok.io/api/v1/utilities/bounds?lat=' + String(coords[0]) + '&lon=' + String(coords[1]), {
+            method: 'GET',
+            headers: {
+                'Povysh-Token': localStorage.getItem('token')
+            }
+        }).then((data) => {
+            return data.json()
+        }).then((data) => {
+            try {
+                var bounds = data.bounds
+                this.setState({restrictMapArea: [[bounds[0], bounds[1]], [bounds[2], bounds[3]]]})
+            } catch {
+
+            }
+            
+        })
     }
 
     componentDidUpdate() {
         var JSONmyState= {map: this.state.map, switchRest: this.state.switchRest}
+        //console.log(localStorage.getItem('token'))
         localStorage.setItem('mapState', JSON.stringify(JSONmyState))
     }
     
@@ -250,16 +291,13 @@ class Mymap extends React.Component {
                             })}
                         </List>
                     </div>
-                    <div style={{width: "100%", height: "calc(100vh - 92px)", display: this.state.displayMap, overflow: 'hidden'}}>
+                    <div style={{width: "100%", height: "calc(100vh - 92px)"}}>
                         <YMaps>
                             <Map width="100%" height="100%" state={{center: this.state.map.center, zoom: this.state.map.zoom }} 
                                 instanceRef={map => this.map=map}
                                 onBoundsChange={this.onBoundsChange}
                                 options={{
-                                    restrictMapArea: [
-                                        [60.056,29.511],
-                                        [50.056,37.829]
-                                    ]
+                                    restrictMapArea: this.state.restrictMapArea
                                 }}
                                 //controls={['smallZoom']}
                             >

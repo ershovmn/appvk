@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "homepage": "https://ershovmn.github.io/appvk",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "predeploy": "npm run build", 
+    "deploy": "gh-pages -d build"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +25,7 @@
     "@vkontakte/vkui-connect": "^1.5.4",
     "babel-eslint": "^9.0.0",
     "core-js": "^2.6.9",
+    "gh-pages": "^2.1.1",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
