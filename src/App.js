@@ -20,7 +20,8 @@ class App extends React.Component {
 			popout: <ScreenSpinner />,
 			test: 'fail',
 			firstLogin: false,
-			errorAuth: false
+			errorAuth: false,
+			blackPanel: true
 		};
 	}
 
@@ -29,13 +30,13 @@ class App extends React.Component {
 		//localStorage.setItem('token', data.token)
 		//this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null})
 		//return
-		fetch('https://31dd3131.ngrok.io/api/v1/users/from_vk_token?token=' + token, {
+		fetch('https://170e4f1c.ngrok.io/api/v1/users/from_vk_token?token=' + token, {
 				method: "GET"
 			}).then((data) => {
 				return data.json()
 			}).then((data) => {
 				localStorage.setItem('token', data.token)
-				this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null, errorAuth: false})
+				this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null, errorAuth: false, blackPanel: false})
 			})
 
 		// console.log('test1')
@@ -62,7 +63,10 @@ class App extends React.Component {
 				case 'VKWebAppAccessTokenReceived':
                     token = e.detail.data.access_token
 					this.tryGet(token)
-					setTimeout(this.setState({errorAuth: true}), 50000)
+					setTimeout(() => {
+						if(this.state.activePanel !== 'start') {
+							this.setState({errorAuth: true})}}
+							, 50000)
 					break;
 				case 'VKWebAppAccessTokenFailed':
 					console.log('error connect Vk')
@@ -116,16 +120,15 @@ class App extends React.Component {
 					<FirstLogin closeThis={() => this.setState({firstLogin: false})} />
 				)
 			}
-			// else if (this.state.activePanel === 'black') {
-			// 	console.log('black')
-			// 	return (
-			// 		<View header={false} activePanel='error'>
-			// 			<Panel id='error'>
-			// 				Произошла ошибка при авторизации
-			// 			</Panel>
-			// 		</View>
-			// 	)
-			// }
+			else if (this.state.blackPanel) {
+				return (
+					<View header={false} activePanel='black'>
+						<Panel id='black' popout={<ScreenSpinner/>}>
+							
+						</Panel>
+					</View>
+				)
+			}
 			else {
 				return (
 					<Start id='start'/>

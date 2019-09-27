@@ -1,8 +1,10 @@
 import React from 'react'
-import {PanelHeader, View, Panel, Search,  ModalCard, ModalRoot, ModalPage, ModalPageHeader, platform, IOS, HeaderButton } from '@vkontakte/vkui';
+import {PanelHeader, View, Panel, Search,  ModalCard, ModalRoot, ModalPage, ModalPageHeader, platform, IOS, HeaderButton, Group } from '@vkontakte/vkui';
 import {List, Cell, Switch} from '@vkontakte/vkui';
 import {YMaps, Map, GeolocationControl, Clusterer, Placemark} from 'react-yandex-maps'
 import connect from '@vkontakte/vkui-connect';
+
+import Menu from './Menu'
 
 import Icon24Done from '@vkontakte/icons/dist/24/done'
 import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
@@ -58,7 +60,20 @@ class Mymap extends React.Component {
             search: '',
             displayMap: 'block',
             displayList: 'none',
-            restrictMapArea: [[0, 0], [60, 60]]
+            restrictMapArea: [[0, 0], [60, 60]],
+            rests: [],
+            filters: [],
+            cuisine: [
+                {id: 1, checked: true},
+                {id: 2, checked: true},
+                {id: 3, checked: true},
+            ],
+            price_tag: [
+                true,
+                true,
+                true,
+                true
+            ]
         }
 
         //this.select = this.select.bind(this)
@@ -88,7 +103,7 @@ class Mymap extends React.Component {
     componentDidMount() {
         var myState = localStorage.getItem('mapState')
         console.log(myState)
-        var coords = [0, 0]
+        var coords = [59.9339453, 30.302315699999994]
 
         connect.send("VKWebAppGetGeodata", {});
         connect.subscribe((e) => {
@@ -98,6 +113,7 @@ class Mymap extends React.Component {
                     console.log(e)
                     coords = [e.detail.data.lat, e.detail.data.long]
                     console.log(coords)
+                    this.setState({map: {center: coords, zoom: '13'}})
                     break
                 default:
                     break
@@ -137,8 +153,8 @@ class Mymap extends React.Component {
             center: coords,
             zoom: this.state.zoom
         }})
-        console.log(coords)
-        fetch('https://31dd3131.ngrok.io/api/v1/utilities/bounds?lat=' + String(coords[0]) + '&lon=' + String(coords[1]), {
+        console.log(localStorage.getItem('token'))
+        fetch('https://170e4f1c.ngrok.io/api/v1/utilities/bounds?lat=' + String(coords[0]) + '&lon=' + String(coords[1]), {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -149,10 +165,32 @@ class Mymap extends React.Component {
             try {
                 var bounds = data.bounds
                 this.setState({restrictMapArea: [[bounds[0], bounds[1]], [bounds[2], bounds[3]]]})
-            } catch {
-
+            } catch { } 
+        })
+        fetch('https://170e4f1c.ngrok.io/api/v1/places/around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
+            method: 'GET',
+            headers: {
+                'Povysh-Token': localStorage.getItem('token')
             }
-            
+        }).then((data) => {
+            return data.json()
+        }).then((data) => {
+            try {
+                var rests = data.rests
+                this.setState({rests: rests})
+            } catch { } 
+        })
+        fetch('https://170e4f1c.ngrok.io/api/v1/utilities/filters', {
+            method: 'GET',
+            headers: {
+                'Povysh-Token': localStorage.getItem('token')
+            }
+        }).then((data) => {
+            return data.json()
+        }).then((data) => {
+            try {
+                this.setState({filters: data})
+            } catch {}
         })
     }
 
@@ -206,13 +244,17 @@ class Mymap extends React.Component {
                     id='restModalCard'
                     onClose={() => this.setActiveModal(null)}
                     title={this.state.modals.data.title}
-                    caption={String(this.state.modals.data.id)}
+                    caption={String(this.state.modals.data.address)}
                     actions={[{
                         title: 'Меню',
                         type: 'primary',
-                        action: () => {this.setActiveModal(null); this.setState({activePanel: 'testmap'})}
+                        action: () => {this.setActiveModal(null); this.setState({activePanel: 'menu'})}
                     }]}
-                ></ModalCard>
+                >
+                    <p>
+                        {this.state.modals.data.description}
+                    </p>
+                </ModalCard>
                 <ModalPage 
                     id='foodcourtModalPage'
                     onClose={() => this.setActiveModal(null)}
@@ -238,7 +280,70 @@ class Mymap extends React.Component {
                         </ModalPageHeader>
                     }
                 >
-                    <List>
+                    {this.state.filters && this.state.filters.cuisine && 
+                        <Group title="Кухня">
+                            <List>
+                                {this.state.filters.cuisine.items && this.state.filters.cuisine.items.length > 0 && this.state.filters.cuisine.items.map((item, index) => {
+                                    if(this.state.cuisine[item.id - 1].checked) {
+                                        return (
+                                            <Cell 
+                                                key={index} 
+                                                defaultChecked
+                                                asideContent={<Switch defaultChecked onClick={() => {
+                                                    var array = this.state.cuisine
+                                                    array[item.id-1].checked = !array[item.id-1].checked
+                                                    this.setState({cuisine: array})
+                                                }}/>}
+                                            >{item.name}</Cell>
+                                        )
+                                    }
+                                    return (
+                                        <Cell 
+                                            key={index} 
+                                            asideContent={<Switch onClick={() => {
+                                                var array = this.state.cuisine
+                                                array[item.id-1].checked = !array[item.id-1].checked
+                                                this.setState({cuisine: array})
+                                            }}/>}
+                                        >{item.name}</Cell>
+                                    )
+                                })}
+                            </List>
+                        </Group>
+                    }
+                    {this.state.filters && this.state.filters.price_tag && 
+                        <Group title='Ценовой диапазон'>
+                            <List>
+                                {this.state.filters.price_tag.items && this.state.filters.price_tag.items.length > 0 && this.state.filters.price_tag.items.map((value, index) => {
+                                    if(this.state.price_tag[index]) {
+                                        return (
+                                            <Cell 
+                                                key={index} 
+                                                defaultChecked
+                                                asideContent={<Switch defaultChecked onClick={() => {
+                                                    var array = this.state.price_tag
+                                                    array[index] = !array[index]
+                                                    this.setState({price_tag: array})
+                                                }}/>}
+                                            >{String(value[0]) + '-' + String(value[1])}</Cell>
+                                        )
+                                    }
+                                    return (
+                                        <Cell 
+                                            key={index} 
+                                            asideContent={<Switch onClick={() => {
+                                                var array = this.state.price_tag
+                                                array[index] = !array[index]
+                                                this.setState({price_tag: array})
+                                            }}/>}
+                                        >{String(value[0]) + '-' + String(value[1])}</Cell>
+                                    )
+                                })}
+                            </List>
+                        </Group>
+                    }
+                    {/* <List>
+                        
                         {this.state.rest.map((value, index) => {
                             if(this.state.switchRest[index]) {
                                 return (
@@ -251,24 +356,17 @@ class Mymap extends React.Component {
                                 )
                             }
                         })}
-                    </List>
+                    </List> */}
                 </ModalPage>
             </ModalRoot>
         )
+        if(this.state.activePanel === 'menu') {
+            return (
+                <Menu id='menu' restID={this.state.modals.data.id} back={() => this.setState({activePanel: 'map'})}/>
+            )
+        }
         return (
             <View header={false} activePanel={this.state.activePanel} modal={modal}>
-                <View id='testmap' activePanel='testmap'>
-                    <Panel id='testmap'>
-                        <PanelHeader
-                            left={<HeaderButton onClick={() => this.setState({activePanel: 'map'})}>
-                                {platform() === IOS ? <Icon28ChevronBack/> : <Icon24Back/>}
-                            </HeaderButton>}
-                        >
-                            Test
-                        </PanelHeader>
-                    </Panel>
-                </View>
-                
                 <Panel id='map' style={{overflow: 'hidden'}}>
                     <Search 
                         id='search'
@@ -281,19 +379,65 @@ class Mymap extends React.Component {
                     />
                     <div style={{display: this.state.displayList}}>
                         <List>
-                            {this.state.restaurants.map((value, index) => {
-                                var str1 = this.state.rest[value.code].name.toLowerCase()
+                            {this.state.rests && this.state.rests.length > 0 && this.state.rests.map((value, index) => {
+                                var str1 = value.name.toLowerCase()
                                 var str2 = this.state.search.toLowerCase()
                                 if(str1.indexOf(str2) === -1 ) {
                                     return null
                                 }
-                                return <Cell key={index}>{this.state.rest[value.code].name}</Cell>
+                                return <Cell key={index}>{value.name}</Cell>
                             })}
+                            
                         </List>
                     </div>
-                    <div style={{width: "100%", height: "calc(100vh - 92px)"}}>
+                    <div>
                         <YMaps>
-                            <Map width="100%" height="100%" state={{center: this.state.map.center, zoom: this.state.map.zoom }} 
+                            <Map height='100vh' width='100%' state={{center: this.state.map.center, zoom: 14}}
+                                options={{
+                                    restrictMapArea: this.state.restrictMapArea
+                                }}
+                                instanceRef={map => this.map=map}
+                                onBoundsChange={this.onBoundsChange}
+                            >
+                                <Clusterer 
+                                    options={{preset: 'islands#invertedVioletClusterIcons'}}
+                                >
+                                    {this.state.rests && this.state.rests.length > 0 && this.state.rests.map((value, index) => {
+                                        if(!this.state.cuisine[value.cuisine_id-1].checked || !this.state.price_tag[value.price_rating]) {
+                                            return null
+                                        }
+                                        if(value.name.indexOf(this.state.search) === -1) {
+                                            return null
+                                        }
+                                        return (
+                                            <Placemark 
+                                                key={index}
+                                                onClick={() => {this.openModal({
+                                                    type: 'restModalCard',
+                                                    title: value.name,
+                                                    id: value.id,
+                                                    address: value.address,
+                                                    description: value.description
+                                                })}}
+                                                geometry={[value.latitude, value.longitude]}
+                                                properties={{
+                                                    iconContent: value.name[0],
+                                                }}
+                                                options={{
+                                                    preset: 'islands#orangeIcon'
+                                                }}
+                                            >
+
+                                            </Placemark>
+                                        )
+                                    })}
+                                </Clusterer>
+                            </Map>
+                        </YMaps>
+                    </div>
+                    <div style={{width: "100%", height: "calc(100vh - 92px)"}}>
+                        {/* <YMaps>
+                            <Map width="100%" height="100%" defaultState={{center: this.state.map.center, zoom: this.state.map.zoom }} 
                                 instanceRef={map => this.map=map}
                                 onBoundsChange={this.onBoundsChange}
                                 options={{
@@ -368,7 +512,7 @@ class Mymap extends React.Component {
                                     })}
                                 </Clusterer>
                             </Map>
-                        </YMaps>
+                        </YMaps> */}
                         <div style={{position: 'fixed', bottom: '50px', right: '10px'}}>
                             {/* <img src='https://vk.com/images/stickers/94/512.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/> */}
                             <img src='http://about-telegram.ru/wp-content/uploads/2018/03/kot-persik-stickers-telegram_21.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/>
