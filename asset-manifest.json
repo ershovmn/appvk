@@ -1,13 +1,13 @@
 {
-  "main.js": "/appvk/static/js/main.a82f0cde.chunk.js",
-  "main.js.map": "/appvk/static/js/main.a82f0cde.chunk.js.map",
+  "main.js": "/appvk/static/js/main.c62adfd1.chunk.js",
+  "main.js.map": "/appvk/static/js/main.c62adfd1.chunk.js.map",
   "runtime~main.js": "/appvk/static/js/runtime~main.56c26b84.js",
   "runtime~main.js.map": "/appvk/static/js/runtime~main.56c26b84.js.map",
   "static/css/2.652a31fb.chunk.css": "/appvk/static/css/2.652a31fb.chunk.css",
-  "static/js/2.11e69e78.chunk.js": "/appvk/static/js/2.11e69e78.chunk.js",
-  "static/js/2.11e69e78.chunk.js.map": "/appvk/static/js/2.11e69e78.chunk.js.map",
+  "static/js/2.964014d8.chunk.js": "/appvk/static/js/2.964014d8.chunk.js",
+  "static/js/2.964014d8.chunk.js.map": "/appvk/static/js/2.964014d8.chunk.js.map",
   "index.html": "/appvk/index.html",
-  "precache-manifest.4fd3b02984368cb4df72d7a9d754edae.js": "/appvk/precache-manifest.4fd3b02984368cb4df72d7a9d754edae.js",
+  "precache-manifest.1b6d36edcd8965798188de5d4163e786.js": "/appvk/precache-manifest.1b6d36edcd8965798188de5d4163e786.js",
   "service-worker.js": "/appvk/service-worker.js",
   "static/css/2.652a31fb.chunk.css.map": "/appvk/static/css/2.652a31fb.chunk.css.map"
 }
