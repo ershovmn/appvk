@@ -1,10 +1,11 @@
 import React from 'react'
-import {PanelHeader, View, Panel, Search,  ModalCard, ModalRoot, ModalPage, ModalPageHeader, platform, IOS, HeaderButton, Group } from '@vkontakte/vkui';
+import {PanelHeader, View, Panel, Search,  ModalCard, ModalRoot, ModalPage, ModalPageHeader, platform, IOS, HeaderButton, Group, Select } from '@vkontakte/vkui';
 import {List, Cell, Switch} from '@vkontakte/vkui';
 import {YMaps, Map, GeolocationControl, Clusterer, Placemark} from 'react-yandex-maps'
 import connect from '@vkontakte/vkui-connect';
 
 import Menu from './Menu'
+import SelectRest from './SelectRest'
 
 import Icon24Done from '@vkontakte/icons/dist/24/done'
 import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
@@ -55,7 +56,7 @@ class Mymap extends React.Component {
                     type: null,
                     id: null,
                     title: null,
-                    idRests: []
+                    rests: []
                 }
             },
             search: '',
@@ -394,7 +395,17 @@ class Mymap extends React.Component {
         )
         if(this.state.activePanel === 'menu') {
             return (
-                <Menu id='menu' restID={this.state.modals.data.id} back={() => this.setState({activePanel: 'map'})}/>
+                <Menu id='menu' restsID={[this.state.modals.data.id]} back={() => this.setState({activePanel: 'map'})}/>
+            )
+        }
+        if(this.state.activePanel === 'selectRest') {
+            return (
+                <SelectRest 
+                    id='selectRest' 
+                    foodCourtID={this.state.modals.data.id}
+                    rests={this.state.modals.data.rests}
+                    back={() => this.setState({activePanel: 'map'})}
+                    />
             )
         }
         return (
@@ -423,7 +434,6 @@ class Mymap extends React.Component {
                                 }})}}
                                 >{value.name}</Cell>
                             })}
-                            
                         </List>
                     </div>
                     <div>
@@ -454,7 +464,7 @@ class Mymap extends React.Component {
                                                     id: value.id,
                                                     address: value.address,
                                                     description: value.description,
-                                                    idRests: []
+                                                    rests: []
                                                 })}}
                                                 geometry={[value.latitude, value.longitude]}
                                                 properties={{
@@ -470,7 +480,7 @@ class Mymap extends React.Component {
                                     })}
 
                                     {this.state.foodCourts && this.state.foodCourts.length > 0 && this.state.foodCourts.map((value, index) => {
-                                        var idRests = this.getIdRestsOnFoodCourt(value.id)
+                                        
                                         return (
                                             <Placemark
                                                 key={index}
@@ -480,7 +490,7 @@ class Mymap extends React.Component {
                                                     id: value.id,
                                                     address: value.address,
                                                     description: value.description,
-                                                    idRests: idRests
+                                                    rests: value.restaraunts
                                                 })}}
                                                 geometry={[value.latitude, value.longitude]}
                                                 properties={{
@@ -495,14 +505,15 @@ class Mymap extends React.Component {
                                 </Clusterer>
                             </Map>
                         </YMaps>
-                    </div>
-                    <div style={{width: "100%", height: "calc(100vh - 92px)"}}>
-                        
                         <div style={{position: 'fixed', bottom: '50px', right: '10px'}}>
                             {/* <img src='https://vk.com/images/stickers/94/512.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/> */}
                             <img src='http://about-telegram.ru/wp-content/uploads/2018/03/kot-persik-stickers-telegram_21.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/>
                         </div>
                     </div>
+                    {/* <div style={{width: "100%", height: "calc(100vh - 92px)"}}>
+                        
+                        
+                    </div> */}
                 </Panel>
             </View>
         )

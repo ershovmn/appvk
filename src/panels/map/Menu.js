@@ -1,10 +1,13 @@
 import React from 'react'
 
-import {PanelHeader, View, Panel, HorizontalScroll, TabsItem, Tabs, List, Cell, Avatar, HeaderButton, platform, IOS, Button, Snackbar} from '@vkontakte/vkui';
+import {PanelHeader, View, Panel, HorizontalScroll, TabsItem, Tabs, List, Cell, Avatar, HeaderButton, platform, IOS, Button, Snackbar, FixedLayout, Alert} from '@vkontakte/vkui';
 
 import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
 import Icon24Back from '@vkontakte/icons/dist/24/back';
 import Icon16Done from '@vkontakte/icons/dist/16/done';
+
+import Bag from './Bag'
+import { timingSafeEqual } from 'crypto';
 
 class Menu extends React.Component {
     constructor() {
@@ -14,15 +17,23 @@ class Menu extends React.Component {
             categories: [],
             items: [],
             currentCategory: -1,
-            snackbar: null
+            snackbar: null,
+            bag: false
         }
 
         this.openBase = this.openBase.bind(this)
     }
 
+    getRestsID = () => {
+        var str = String(this.props.restsID[0])
+        for(var i = 1; i < this.props.restsID.length; i++) {
+            str += ',' + String(this.props.restsID[i])
+        }
+        return str
+    }
+
     componentDidMount() {
-        console.log(this.props)
-        fetch('https://170e4f1c.ngrok.io/api/v1/places/food?restaurant_id=' + String(this.props.restID), {
+        fetch('https://170e4f1c.ngrok.io/api/v1/places/food?restaurant_id=' + this.getRestsID(), {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -46,6 +57,18 @@ class Menu extends React.Component {
                     this.setState({currentCategory: this.state.categories[0].id})
                 }
             } catch { } 
+        })
+        fetch('https://170e4f1c.ngrok.io/api/v1/cart/view', {
+            method: 'GET',
+            headers: {
+                'Povysh-Token': localStorage.getItem('token')
+            }
+        }).then((data) => {
+            return data.json()
+        }).then((data) => {
+            if(data.length > 0 && this.props.restsID.indexOf(data[0].menu_item.restaraunt_id) === -1) {
+                this.setState({bag: true})
+            }
         })
     }
 
@@ -71,8 +94,33 @@ class Menu extends React.Component {
         })
     }
 
-    render() {
+    clearBag = () => {
+        fetch('https://170e4f1c.ngrok.io/api/v1/cart/clean', {
+            method: 'GET',
+            headers: {
+                'Povysh-Token': localStorage.getItem('token')
+            }
+        })
+        this.setState({bag: false})
+    }
 
+    render() {
+        if(this.state.bag) {
+            return (
+                    <Panel id='mainError'>
+                        <div style={{height: '50px'}}></div>
+                        <p>У вас в корзине что-то есть, очистить её и продолжить?</p> 
+                        <Button onClick={this.clearBag} size='xl'>Да</Button>
+                        <p></p>
+                        <Button onClick={() => this.setState({bag: false, activePanel: 'bag'})} size='xl'>Нет, перейти в корзину</Button>
+                    </Panel>
+            )
+        }
+        if(this.state.activePanel === 'bag') {
+            return (
+                <Bag id={this.props.id} back={() => this.setState({activePanel: 'mainMenu'})} />
+            )
+        }
         return (
             <View id={this.props.id} activePanel={this.state.activePanel}>
                 <Panel id='mainMenu'>
@@ -82,7 +130,7 @@ class Menu extends React.Component {
                               {platform() === IOS ? <Icon28ChevronBack /> : <Icon24Back />}
                               
                             </HeaderButton>
-                          }
+                        }
                     >
                         Menu
                     </PanelHeader>
@@ -128,6 +176,14 @@ class Menu extends React.Component {
                         
                         }
                     </List>
+                    
+                    <FixedLayout vertical='bottom'>
+                        <Button size='xl' onClick={() => {
+                            this.setState({activePanel: 'bag'})
+                        }}>
+                            Перейти к корзине
+                        </Button>
+                    </FixedLayout>
                     {this.state.snackbar}
                 </Panel>
             </View>
