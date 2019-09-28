@@ -46,7 +46,7 @@ class Mymap extends React.Component {
             contextOpened: false,
             switchRest:[true, true, true],
             rest: this.rest,
-            foodCourts: this.foodCourts,
+            foodCourts: [],
             go: this.props.go,
             modals: {
                 activeModal: null,
@@ -54,7 +54,8 @@ class Mymap extends React.Component {
                 data: {
                     type: null,
                     id: null,
-                    title: null
+                    title: null,
+                    idRests: []
                 }
             },
             search: '',
@@ -176,7 +177,7 @@ class Mymap extends React.Component {
             return data.json()
         }).then((data) => {
             try {
-                var rests = data.rests
+                var rests = data
                 this.setState({rests: rests})
             } catch { } 
         })
@@ -191,6 +192,20 @@ class Mymap extends React.Component {
             try {
                 this.setState({filters: data})
             } catch {}
+        })
+
+        fetch('https://170e4f1c.ngrok.io/api/v1/places/footcourts_around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
+            method: 'GET',
+            headers: {
+                'Povysh-Token': localStorage.getItem('token')
+            }
+        }).then((data) => {
+            return data.json()
+        }).then((data) => {
+            try {
+                this.setState({foodCourts: data})
+            }
+            catch {}
         })
     }
 
@@ -236,6 +251,18 @@ class Mymap extends React.Component {
         }
     }
 
+    getIdRestsOnFoodCourt = (id) => {
+        var res = []
+        this.state.foodCourts.map((value) => {
+            if(value.id === id) {
+                value.restaraunts.map((item) => {
+                    res.push(item.id)
+                })
+            }
+        })
+        return res
+    }
+
     render() {
         console.log(this.state)
         var modal = (
@@ -255,19 +282,24 @@ class Mymap extends React.Component {
                         {this.state.modals.data.description}
                     </p>
                 </ModalCard>
-                <ModalPage 
-                    id='foodcourtModalPage'
+                <ModalCard
+                    id='foodcourtModalCard'
                     onClose={() => this.setActiveModal(null)}
-                    header={
-                        <ModalPageHeader right={<HeaderButton onClick={() => this.setActiveModal(null)}>{platform() === IOS ? 'Готово' : <Icon24Done />}</HeaderButton>}>
-                            {this.state.modals.data.title}
-                        </ModalPageHeader>
-                    }
+                    title={this.state.modals.data.title}
+                    caption={String(this.state.modals.data.address)}
+                    actions={[{
+                        title: 'Меню',
+                        type: 'primary',
+                        action: () => {
+                            this.setActiveModal(null)
+                            this.setState({activePanel: 'selectRest'})
+                        }
+                    }]}
                 >
-                    <List>
-                        <Cell key='1' onClick={() => console.log('click foodcourt')}>Food Court</Cell>
-                    </List>
-                </ModalPage>
+                    <p>
+                        {this.state.modals.data.description}
+                    </p>
+                </ModalCard>
                 <ModalPage 
                     id='filter'
                     onClose={() => this.setActiveModal(null)}
@@ -407,7 +439,7 @@ class Mymap extends React.Component {
                                     options={{preset: 'islands#invertedVioletClusterIcons'}}
                                 >
                                     {this.state.rests && this.state.rests.length > 0 && this.state.rests.map((value, index) => {
-                                        if(!this.state.cuisine[value.cuisine_id-1].checked || !this.state.price_tag[value.price_rating]) {
+                                        if(!this.state.cuisine[value.cuisine.id-1].checked || !this.state.price_tag[value.price_rating]) {
                                             return null
                                         }
                                         if(value.name.indexOf(this.state.search) === -1) {
@@ -421,7 +453,8 @@ class Mymap extends React.Component {
                                                     title: value.name,
                                                     id: value.id,
                                                     address: value.address,
-                                                    description: value.description
+                                                    description: value.description,
+                                                    idRests: []
                                                 })}}
                                                 geometry={[value.latitude, value.longitude]}
                                                 properties={{
@@ -433,6 +466,30 @@ class Mymap extends React.Component {
                                             >
 
                                             </Placemark>
+                                        )
+                                    })}
+
+                                    {this.state.foodCourts && this.state.foodCourts.length > 0 && this.state.foodCourts.map((value, index) => {
+                                        var idRests = this.getIdRestsOnFoodCourt(value.id)
+                                        return (
+                                            <Placemark
+                                                key={index}
+                                                onClick={() => {this.openModal({
+                                                    type: 'foodcourtModalCard',
+                                                    title: value.name,
+                                                    id: value.id,
+                                                    address: value.address,
+                                                    description: value.description,
+                                                    idRests: idRests
+                                                })}}
+                                                geometry={[value.latitude, value.longitude]}
+                                                properties={{
+                                                    iconContent: value.restaraunts.length,
+                                                }}
+                                                options={{
+                                                    preset: 'islands#orangeIcon'
+                                                }}
+                                            ></Placemark>
                                         )
                                     })}
                                 </Clusterer>

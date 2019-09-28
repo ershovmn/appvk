@@ -31,7 +31,17 @@ class Menu extends React.Component {
             return data.json()
         }).then((data) => {
             try {
-                this.setState({categories: data.categories, items: data.items})
+                this.setState({items: data})
+                var categories = []
+                var categoriesID = []
+                this.state.items.map((value) => {
+                    console.log(value.menu_category)
+                    if(categoriesID.indexOf(value.menu_category.id) === -1) {
+                        categories.push(value.menu_category)
+                        categoriesID.push(value.menu_category.id)
+                    }
+                })
+                this.setState({categories: categories})
                 if(this.state.categories && this.state.categories.length > 0) {
                     this.setState({currentCategory: this.state.categories[0].id})
                 }
@@ -94,7 +104,7 @@ class Menu extends React.Component {
                     </Tabs>
                     <List>
                         {this.state.items && this.state.items.length > 0 && this.state.items.map((value, index) => {
-                            if(value.menu_category_id !== this.state.currentCategory) {
+                            if(value.menu_category.id !== this.state.currentCategory) {
                                 return null
                             }
                             return (
