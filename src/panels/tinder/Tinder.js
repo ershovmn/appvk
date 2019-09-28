@@ -9,7 +9,7 @@ class Tinder extends React.Component {
         super()
         this.state = {
             activeModal: 'modalRoot',
-            fisrt: true,
+            fisrt: false,
             sex: 'm'
         }
     }
@@ -25,9 +25,9 @@ class Tinder extends React.Component {
                         <p>Найдите себе человека, который разделяет ваши предпочтения в еде.</p>
                         <p>Проводите вместе время за любимыми блюдами.</p>
                         <p>Я хочу найти себе</p>
-                        <Select top='Я хочу найти себе' placeholder="">
-                            <option value="m" onClick={() => this.setState({sex: 'm'})}>Парня</option>
-                            <option value='f' onClick={() => this.setState({sex: 'f'})}>Девушку</option>
+                        <Select>
+                            <option value="m">Парня</option>
+                            <option value='f'>Девушку</option>
                         </Select>
                         {this.state.sex}
                     </Panel>

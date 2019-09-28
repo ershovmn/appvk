@@ -2,7 +2,7 @@ import React from 'react'
 import {PanelHeader, View, Panel, Search,  ModalCard, ModalRoot, ModalPage, ModalPageHeader, platform, IOS, HeaderButton, Group, Select } from '@vkontakte/vkui';
 import {List, Cell, Switch} from '@vkontakte/vkui';
 import {YMaps, Map, GeolocationControl, Clusterer, Placemark} from 'react-yandex-maps'
-import connect from '@vkontakte/vkui-connect';
+import connect from '@vkontakte/vk-connect';
 
 import Menu from './Menu'
 import SelectRest from './SelectRest'
@@ -107,20 +107,12 @@ class Mymap extends React.Component {
         console.log(myState)
         var coords = [59.9339453, 30.302315699999994]
 
-        connect.send("VKWebAppGetGeodata", {});
-        connect.subscribe((e) => {
-            console.log(e.detail.data)
-            switch (e.detail.type) {
-                case 'VKWebAppGeodataResult':
-                    console.log(e)
-                    coords = [e.detail.data.lat, e.detail.data.long]
-                    console.log(coords)
-                    this.setState({map: {center: coords, zoom: '13'}})
-                    break
-                default:
-                    break
-            }
-        })
+        connect.sendPromise("VKWebAppGetGeodata")
+            .then((data) => {
+                console.log(data)
+                coords = [data.lat, data.long]
+                this.setState({map: {center: coords, zoom: '13'}})
+            })
 
         // navigator.geolocation.getCurrentPosition((position) => {
         //     console.log('geolocation')
@@ -156,7 +148,7 @@ class Mymap extends React.Component {
         //     zoom: this.state.zoom
         // }})
         console.log(localStorage.getItem('token'))
-        fetch('https://170e4f1c.ngrok.io/api/v1/utilities/bounds?lat=' + String(coords[0]) + '&lon=' + String(coords[1]), {
+        fetch('/api/v1/utilities/bounds?lat=' + String(coords[0]) + '&lon=' + String(coords[1]), {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -169,7 +161,7 @@ class Mymap extends React.Component {
                 this.setState({restrictMapArea: [[bounds[0], bounds[1]], [bounds[2], bounds[3]]]})
             } catch { } 
         })
-        fetch('https://170e4f1c.ngrok.io/api/v1/places/around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
+        fetch('/api/v1/places/around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -182,7 +174,7 @@ class Mymap extends React.Component {
                 this.setState({rests: rests})
             } catch { } 
         })
-        fetch('https://170e4f1c.ngrok.io/api/v1/utilities/filters', {
+        fetch('/api/v1/utilities/filters', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -195,7 +187,7 @@ class Mymap extends React.Component {
             } catch {}
         })
 
-        fetch('https://170e4f1c.ngrok.io/api/v1/places/footcourts_around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
+        fetch('/api/v1/places/footcourts_around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -395,13 +387,14 @@ class Mymap extends React.Component {
         )
         if(this.state.activePanel === 'menu') {
             return (
-                <Menu id='menu' restsID={[this.state.modals.data.id]} back={() => this.setState({activePanel: 'map'})}/>
+                <Menu id='menu' trackingOrder={this.props.trackingOrder} restsID={[this.state.modals.data.id]} back={() => this.setState({activePanel: 'map'})}/>
             )
         }
         if(this.state.activePanel === 'selectRest') {
             return (
-                <SelectRest 
+                <SelectRest
                     id='selectRest' 
+                    trackingOrder={this.props.trackingOrder}
                     foodCourtID={this.state.modals.data.id}
                     rests={this.state.modals.data.rests}
                     back={() => this.setState({activePanel: 'map'})}
@@ -409,17 +402,32 @@ class Mymap extends React.Component {
             )
         }
         return (
-            <View header={false} activePanel={this.state.activePanel} modal={modal}>
+            <View header={platform() === IOS} activePanel={this.state.activePanel} modal={modal}>
                 <Panel id='map' style={{overflow: 'hidden'}}>
-                    <Search 
-                        id='search'
-                        value={this.state.search} 
-                        onChange={(value) => this.setState({search: value})} 
-                        onFocus={() => this.setState({displayMap: 'none', displayList: 'block'})}
-                        onBlur={() => this.setState({displayMap: 'block', displayList: 'none'})}
-                        onKeyDown={this.onKeyPressed}
-                        tabIndex='0'
-                    />
+                    {platform() === IOS && <PanelHeader>
+                        <Search 
+                            id='search'
+                            theme='header'
+                            value={this.state.search} 
+                            onChange={(value) => this.setState({search: value})} 
+                            onFocus={() => this.setState({displayMap: 'none', displayList: 'block'})}
+                            onBlur={() => this.setState({displayMap: 'block', displayList: 'none'})}
+                            onKeyDown={this.onKeyPressed}
+                            tabIndex='0'
+                        />
+                    </PanelHeader>}
+                    {platform() !== IOS && 
+                        <Search 
+                            id='search'
+                            value={this.state.search} 
+                            onChange={(value) => this.setState({search: value})} 
+                            onFocus={() => this.setState({displayMap: 'none', displayList: 'block'})}
+                            onBlur={() => this.setState({displayMap: 'block', displayList: 'none'})}
+                            onKeyDown={this.onKeyPressed}
+                            tabIndex='0'
+                        />
+                    }
+                    
                     <div style={{display: this.state.displayList}}>
                         <List>
                             {this.state.rests && this.state.rests.length > 0 && this.state.rests.map((value, index) => {
@@ -428,7 +436,10 @@ class Mymap extends React.Component {
                                 if(str1.indexOf(str2) === -1 ) {
                                     return null
                                 }
-                                return <Cell key={index} expandable onClick={() => {console.log('test'); this.setState({map: {
+                                return <Cell key={index} expandable onClick={() => {
+                                    console.log(value.latitude)
+                                    console.log(value.longitude)
+                                    this.setState({map: {
                                     center: [value.latitude, value.longitude],
                                     zoom: 14
                                 }})}}

@@ -33,7 +33,7 @@ class Menu extends React.Component {
     }
 
     componentDidMount() {
-        fetch('https://170e4f1c.ngrok.io/api/v1/places/food?restaurant_id=' + this.getRestsID(), {
+        fetch('/api/v1/places/food?restaurant_id=' + this.getRestsID(), {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -58,7 +58,7 @@ class Menu extends React.Component {
                 }
             } catch { } 
         })
-        fetch('https://170e4f1c.ngrok.io/api/v1/cart/view', {
+        fetch('/api/v1/cart/view', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -72,11 +72,17 @@ class Menu extends React.Component {
         })
     }
 
-    addToCart = (id) => {
-        fetch('https://170e4f1c.ngrok.io/api/v1/cart/push?menu_item_id=' + String(id), {
+    addToCart = ({id, name}) => {
+        fetch('/api/v1/cart/push?menu_item_id=' + String(id), {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
+            }
+        }).then((data) => {
+            return data.json()
+        }).then((data) => {
+            if(data.is_saved) {
+                this.openBase(name)
             }
         })
     }
@@ -95,7 +101,7 @@ class Menu extends React.Component {
     }
 
     clearBag = () => {
-        fetch('https://170e4f1c.ngrok.io/api/v1/cart/clean', {
+        fetch('/api/v1/cart/clean', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -118,7 +124,7 @@ class Menu extends React.Component {
         }
         if(this.state.activePanel === 'bag') {
             return (
-                <Bag id={this.props.id} back={() => this.setState({activePanel: 'mainMenu'})} />
+                <Bag id={this.props.id} trackingOrder={this.props.trackingOrder} back={() => this.setState({activePanel: 'mainMenu' })} />
             )
         }
         return (
@@ -134,7 +140,7 @@ class Menu extends React.Component {
                     >
                         Menu
                     </PanelHeader>
-                    <Tabs type='button'>
+                    <Tabs type="buttons">
                         <HorizontalScroll>
                             {this.state.categories.length > 0 && this.state.categories.map((value, index) => {
                                 return (
@@ -157,13 +163,13 @@ class Menu extends React.Component {
                             }
                             return (
                                 <Cell
-                                    before={<Avatar src='https://burgerking.ru/images/product_images/mobile/cheezy-joe.png' />}
+                                    before={<Avatar src={'' + value.photo_url} />}
                                     description={value.description}
                                     asideContent={
                                         <Button 
                                             onClick={() => {
-                                                this.addToCart(value.id)
-                                                this.openBase(value.name)
+                                                this.addToCart({id: value.id, name: value.name})
+                                                
                                             }}
                                             style={{width: '80px'}}
                                         >{String(value.price) + ' руб'}</Button>
@@ -176,15 +182,15 @@ class Menu extends React.Component {
                         
                         }
                     </List>
-                    
+
                     <FixedLayout vertical='bottom'>
-                        <Button size='xl' onClick={() => {
+                        <Tabs>
+                            <TabsItem onClick={() => {
                             this.setState({activePanel: 'bag'})
-                        }}>
-                            Перейти к корзине
-                        </Button>
+                        }}>Перейти к корзине</TabsItem>
+                        </Tabs>
                     </FixedLayout>
-                    {this.state.snackbar}
+                    {this.state.snackbar} 
                 </Panel>
             </View>
         )

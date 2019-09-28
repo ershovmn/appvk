@@ -7,9 +7,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "predeploy": "npm run build", 
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
+  "proxy": "https://170e4f1c.ngrok.io",
   "keywords": [],
   "author": "",
   "license": "MIT",
@@ -20,7 +21,7 @@
   },
   "dependencies": {
     "@vkontakte/icons": "^1.8.3",
-    "@vkontakte/vk-connect": "^1.5.6",
+    "@vkontakte/vk-connect": "^1.6.5",
     "@vkontakte/vkui": "^2.30.5",
     "@vkontakte/vkui-connect": "^1.5.4",
     "babel-eslint": "^9.0.0",

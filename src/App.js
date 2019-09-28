@@ -1,5 +1,5 @@
 import React from 'react';
-import connect from '@vkontakte/vkui-connect';
+import connect from '@vkontakte/vk-connect';
 import {Panel, Alert, ScreenSpinner, View } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import Start from './panels/Start'
@@ -21,34 +21,23 @@ class App extends React.Component {
 			test: 'fail',
 			firstLogin: false,
 			errorAuth: false,
-			blackPanel: true
+			blackPanel: true,
+			blackText: ''
 		};
 	}
 
-	async tryGet(token) {
-		//var data={toke: token + '123456789'}
-		//localStorage.setItem('token', data.token)
-		//this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null})
-		//return
-		fetch('https://170e4f1c.ngrok.io/api/v1/users/from_vk_token?token=' + token, {
+	 tryGet(token) {
+		fetch('/api/v1/users/from_vk_token?token=' + token, {
 				method: "GET"
 			}).then((data) => {
 				return data.json()
 			}).then((data) => {
 				localStorage.setItem('token', data.token)
-				this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null, errorAuth: false, blackPanel: false})
+				this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null, errorAuth: false, blackPanel: false, firstLogin: data.is_new})
 			})
-
-		// console.log('test1')
-		// var mytoken = Requests.getToken(token)
-		// console.log('test')
-		// localStorage.setItem('token', mytoken)
-		// this.setState({token: token, mytoken: mytoken, activePanel: 'start', popout: null})
 	}
 
 	componentDidMount() {
-		//this.setState({token: '12345', mytoken: '12345', activePanel: 'start', popout: null})
-		//setTimeout(() => this.setState({activePanel: 'errorauth'}), 10000)
 		var myState = localStorage.getItem('mapState')
 		if(myState !== null) {
 			myState = JSON.parse(myState)
@@ -61,8 +50,16 @@ class App extends React.Component {
         connect.subscribe((e) => {
             switch (e.detail.type) {
 				case 'VKWebAppAccessTokenReceived':
-                    token = e.detail.data.access_token
-					this.tryGet(token)
+					token = e.detail.data.access_token
+					this.setState({blackText: token})
+					fetch('/api/v1/users/from_vk_token?token=' + token, {
+						method: "GET"
+					}).then((data) => {
+						return data.json()
+					}).then((data) => {
+						localStorage.setItem('token', data.token)
+						this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null, errorAuth: false, blackPanel: false, firstLogin: data.is_new})
+					})
 					setTimeout(() => {
 						if(this.state.activePanel !== 'start') {
 							this.setState({errorAuth: true})}}
@@ -75,7 +72,24 @@ class App extends React.Component {
 				default:
 					
 			}
-        })
+		})
+		// var token = null
+		// console.log('start')
+		// connect.send('VKWebAppGetAuthToken', {"app_id": 7150406, "scope": ""})
+		// connect.subscribe((e) => {
+
+		// 	.then((data)=> {	
+		// 		token = data.access_token
+		// 		this.tryGet(token)
+		// 		console.log(data)
+		// 		setTimeout(() => {
+		// 			if(this.state.activePanel !== 'start') {
+		// 				this.setState({errorAuth: true})}}
+		// 				, 50000)
+		// 	})
+		// 	.catch((error) => {
+		// 		this.setState({errorAuth: true})
+		// 	})
 	}
 
 	allertPopout = () => {
@@ -122,11 +136,9 @@ class App extends React.Component {
 			}
 			else if (this.state.blackPanel) {
 				return (
-					<View header={false} activePanel='black'>
 						<Panel id='black' popout={<ScreenSpinner/>}>
-							
+							<p>{this.state.blackText}</p>
 						</Panel>
-					</View>
 				)
 			}
 			else {

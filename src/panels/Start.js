@@ -10,7 +10,8 @@ import Icon24Market from '@vkontakte/icons/dist/24/market';
 import Settings from './settings/Settings'
 import Mymap from './map/Mymap'
 import Tinder from './tinder/Tinder'
-import Bag from './Bag/Bag'
+import Order from './Order/Order'
+import FastOrder from './FastOrder/FastOrder'
 
 class Start extends React.Component {
     flag_name = true
@@ -32,6 +33,11 @@ class Start extends React.Component {
 
     viewChange = (viewID) => {
         this.setState({activeStory: viewID})
+    }
+
+    trackingOrder = (orderID) => {
+        console.log(orderID)
+        this.setState({orderID: orderID, activeStory: 'myorder'})
     }
 
     render() {
@@ -60,11 +66,11 @@ class Start extends React.Component {
                         text={this.flag_name ? 'Tinder' : null }
                     ><Icon24Like/> </TabbarItem>
                     <TabbarItem 
-                        key='bag'
+                        key='myorder'
                         onClick={this.onStoryChange}
-                        selected={this.state.activeStory === 'bag'}
-                        data-story='bag'
-                        text={this.flag_name && 'Bag'}
+                        selected={this.state.activeStory === 'myorder'}
+                        data-story='myorder'
+                        text={this.flag_name ? 'Order' : null}
                     >
                         <Icon24Market/>
                     </TabbarItem>
@@ -77,21 +83,17 @@ class Start extends React.Component {
                     ><Icon24Settings/> </TabbarItem>
                 </Tabbar>
                 }>
-                <Mymap id='map' viewChange={this.viewChange}/>
+                <Mymap id='map' viewChange={this.viewChange} trackingOrder={this.trackingOrder}/>
                 
-                <View id='quick' activePanel='quick'>
-                    <Panel id='quick'>
-                        <PanelHeader>Quick</PanelHeader>
-                        Quick
-                    </Panel>
-                </View>
+                <FastOrder id='quick' />
                 <Tinder id='tinder' />
+                <Order id='myorder' orderID={this.state.orderID}/>
                 <View id='settings' activePanel='settings'>
                     <Panel id='settings'>
                         <Settings />
                     </Panel>
                 </View>
-                <Bag id='bag' />
+                
                 {/* <View id='basket' activePanel='basket'>
                     <Panel id='basket'>
                         Basket

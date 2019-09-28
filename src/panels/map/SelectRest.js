@@ -17,6 +17,8 @@ class SelectRest extends React.Component {
             activePanel: 'mainSelectRest',
             restsID: []
         }
+
+        this.updateArrray = this.updateArrray.bind(this)
     }
 
     componentDidMount() {
@@ -27,10 +29,18 @@ class SelectRest extends React.Component {
         this.setState({checked: array})
     }
 
+    updateArrray = () => {
+        var array = []
+        this.props.rests.map(() => {
+            array.push(false)
+        })
+        this.setState({checked: array})
+    }
+
     render() {
         if(this.state.activePanel === 'menu') {
             return (
-                <Menu id={this.props.id} restsID={this.state.restsID} back={() => this.setState({activePanel: 'mainSelectRest'})} />
+                <Menu id={this.props.id} trackingOrder={this.props.trackingOrder} restsID={this.state.restsID} back={() => {this.setState({activePanel: 'mainSelectRest'}); this.updateArrray()}} />
             )
         }
         return (

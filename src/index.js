@@ -2,7 +2,7 @@ import 'core-js/es6/map';
 import 'core-js/es6/set';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import connect from '@vkontakte/vkui-connect';
+import connect from '@vkontakte/vk-connect';
 import App from './App';
 // import registerServiceWorker from './sw';
 
@@ -18,11 +18,13 @@ connect.subscribe((e) => {
             break;
  
         default:
-            console.log(e.detail.type);
+            //console.log(e.detail.type);
     }
  });
 
-connect.send('VKWebAppInit', {});
+connect.sendPromise('VKWebAppInit')
+ .then((date) => console.log(date))
+ .catch((error) => console.log(error))
 
 // Если вы хотите, чтобы ваше веб-приложение работало в оффлайне и загружалось быстрее,
 // расскомментируйте строку с registerServiceWorker();
