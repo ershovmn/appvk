@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {View, Panel, PanelHeader, platform, IOS, HeaderButton, List, Cell, Avatar, Tabs, TabsItem, FixedLayout, PullToRefresh, ModalRoot, ModalCard, Group, Button, ModalPage} from '@vkontakte/vkui'
+import {View, Panel, PanelHeader, platform, IOS, HeaderButton, List, Cell, Avatar, Tabs, TabsItem, FixedLayout, PullToRefresh, ModalRoot, ModalCard, Group, Button, ModalPage, Switch} from '@vkontakte/vkui'
 
 import {ModalPageHeader, Select, Input} from '@vkontakte/vkui'
 
@@ -112,7 +112,7 @@ class Bag extends React.Component {
                                 <Input type='time' />
                             </div>
                         }
-                        {this.state.mode === 1 &&
+                        {this.state.mode !== 0 &&
                             <div>
                                 <Group title='День недели'>
                                     <Cell asideContent={<Switch />}>Понедельник</Cell>
