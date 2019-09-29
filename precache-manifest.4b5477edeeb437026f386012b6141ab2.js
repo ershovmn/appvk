@@ -4,8 +4,8 @@ self.__precacheManifest = [
     "url": "/appvk/static/js/runtime~main.56c26b84.js"
   },
   {
-    "revision": "1d3fb461e7707a416d42",
-    "url": "/appvk/static/js/main.b997b5b1.chunk.js"
+    "revision": "70275c4b0270ffde28bf",
+    "url": "/appvk/static/js/main.6ac31f91.chunk.js"
   },
   {
     "revision": "a1d87d4a82cae1ff0fb1",
@@ -16,7 +16,7 @@ self.__precacheManifest = [
     "url": "/appvk/static/css/2.652a31fb.chunk.css"
   },
   {
-    "revision": "8ccbd67b3781a313c020e173b5efba28",
+    "revision": "c28c11f680e2738a3921d9cd7d352fa8",
     "url": "/appvk/index.html"
   }
 ];
