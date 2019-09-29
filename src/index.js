@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import connect from '@vkontakte/vk-connect';
 import App from './App';
+import ErrorBoundary from './ErrorBoundary'
 // import registerServiceWorker from './sw';
 
 // Init VK App
@@ -13,7 +14,6 @@ connect.subscribe((e) => {
         case 'VKWebAppUpdateConfig':
             let schemeAttribute = document.createAttribute('scheme');
             schemeAttribute.value = e.detail.data.scheme ? e.detail.data.scheme : 'client_light';
-            schemeAttribute.value = 'client_dark'
             document.body.attributes.setNamedItem(schemeAttribute);
             break;
  
@@ -32,4 +32,4 @@ connect.sendPromise('VKWebAppInit')
 // Подробнее про сервис воркеры можно почитать тут — https://vk.cc/8MHpmT 
 // registerServiceWorker();
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<ErrorBoundary><App /></ErrorBoundary> , document.getElementById('root'));

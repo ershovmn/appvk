@@ -14,11 +14,13 @@ class FirstLogin extends React.Component {
             <View header={false} activePanel='main'>
                 <Panel id='main'>
                     <div style={{
-                        display: 'flex',
+                        display: 'flex', 
+                        flexDirection: 'column',
                         justifyContent: 'center',
-                        alignItems: 'center',
+                        height: '80vh',
+                        alignItems: 'center', 
                     }}>
-                        <div style={{height: '200px', width: '100%', display: 'block'}}>
+                        <div style={{height: '100%', width: '100%'}}>
                             <Gallery
                                 slideWidth='100%'
                                 style={{height: '100%', width: '100%'}}

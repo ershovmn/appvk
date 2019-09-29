@@ -5,6 +5,7 @@ import '@vkontakte/vkui/dist/vkui.css';
 import Start from './panels/Start'
 import Requests from './Requests/Requests'
 
+import serverAddress from './ServerAddress'
 
 import FirstLogin from './FirstLogin'
 
@@ -26,14 +27,14 @@ class App extends React.Component {
 		};
 	}
 
-	 tryGet(token) {
-		fetch('/api/v1/users/from_vk_token?token=' + token, {
+	 tryGet(id) {
+		fetch(serverAddress + '/api/v1/users/from_vk_id?id=' + id, {
 				method: "GET"
 			}).then((data) => {
 				return data.json()
 			}).then((data) => {
 				localStorage.setItem('token', data.token)
-				this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null, errorAuth: false, blackPanel: false, firstLogin: data.is_new})
+				this.setState({id: id, mytoken: data.token, activePanel: 'start', popout: null, errorAuth: false, blackPanel: false, firstLogin: data.is_new})
 			})
 	}
 
@@ -44,35 +45,48 @@ class App extends React.Component {
 			myState = {switchRest: myState.switchRest, map: null}
 			localStorage.setItem('mapState', JSON.stringify(myState))
 		}
+
+		connect.sendPromise('VKWebAppGetUserInfo')
+			.then((data) => {
+				this.tryGet(data.id)
+			})
+			.catch((error) => {
+				console.log(error)
+				this.setState({errorAuth: true})
+			})
 		
-		connect.send('VKWebAppGetAuthToken', {"app_id": 7150406, "scope": ""})
-        var token = null
-        connect.subscribe((e) => {
-            switch (e.detail.type) {
-				case 'VKWebAppAccessTokenReceived':
-					token = e.detail.data.access_token
-					this.setState({blackText: token})
-					fetch('/api/v1/users/from_vk_token?token=' + token, {
-						method: "GET"
-					}).then((data) => {
-						return data.json()
-					}).then((data) => {
-						localStorage.setItem('token', data.token)
-						this.setState({token: token, mytoken: data.token, activePanel: 'start', popout: null, errorAuth: false, blackPanel: false, firstLogin: data.is_new})
-					})
-					setTimeout(() => {
-						if(this.state.activePanel !== 'start') {
-							this.setState({errorAuth: true})}}
-							, 50000)
-					break;
-				case 'VKWebAppAccessTokenFailed':
-					console.log('error connect Vk')
-					this.setState({errorAuth: true})
-					break;
-				default:
+		// connect.subscribe((e) => {
+		// 	switch (e.detail.type) {
+		// 		case 'VKWebAppGetUserInfoResult':
+		// 			this.setState({ fetchedUser: e.detail.data });
+		// 			break;
+		// 		default:
+		// 			console.log(e.detail.type);
+		// 	}
+		// });
+		// connect.send('VKWebAppGetUserInfo', {});
+
+		// connect.send('VKWebAppGetAuthToken', {"app_id": 7150406, "scope": ""})
+        // var token = null
+        // connect.subscribe((e) => {
+        //     switch (e.detail.type) {
+		// 		case 'VKWebAppAccessTokenReceived':
+		// 			token = e.detail.data.access_token
+		// 			this.setState({blackText: token})
+		// 			this.tryGet(token)
+		// 			setTimeout(() => {
+		// 				if(this.state.activePanel !== 'start') {
+		// 					this.setState({errorAuth: true})}}
+		// 					, 50000)
+		// 			break;
+		// 		case 'VKWebAppAccessTokenFailed':
+		// 			console.log('error connect Vk')
+		// 			this.setState({errorAuth: true})
+		// 			break;
+		// 		default:
 					
-			}
-		})
+		// 	}
+		// })
 		// var token = null
 		// console.log('start')
 		// connect.send('VKWebAppGetAuthToken', {"app_id": 7150406, "scope": ""})
@@ -118,27 +132,27 @@ class App extends React.Component {
 	render() {
 		console.log(this.state)
 		try {
-			if (this.state.errorAuth) {
-				console.log('errorAuth')
-				return (
-					<View header={false} activePanel='error'>
-						<Panel id='error'>
-							Произошла ошибка при авторизации
-						</Panel>
-					</View>
-				)
-			}
-			else if (this.state.firstLogin) {
+			if (this.state.firstLogin) {
 				console.log('firstLogin')
 				return (
 					<FirstLogin closeThis={() => this.setState({firstLogin: false})} />
 				)
 			}
+			else if (this.state.errorAuth) {
+				console.log('errorAuth')
+				return (
+						<Panel id='error'>
+							Произошла ошибка при авторизации
+						</Panel>
+				)
+			}
 			else if (this.state.blackPanel) {
 				return (
-						<Panel id='black' popout={<ScreenSpinner/>}>
-							<p>{this.state.blackText}</p>
+					<View id='blackview' activePanel='panel' popout={<ScreenSpinner/>}>
+						<Panel id='black'>
+							
 						</Panel>
+					</View>
 				)
 			}
 			else {

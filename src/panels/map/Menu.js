@@ -9,6 +9,8 @@ import Icon16Done from '@vkontakte/icons/dist/16/done';
 import Bag from './Bag'
 import { timingSafeEqual } from 'crypto';
 
+import serverAddress from '../../ServerAddress'
+
 class Menu extends React.Component {
     constructor() {
         super()
@@ -33,7 +35,7 @@ class Menu extends React.Component {
     }
 
     componentDidMount() {
-        fetch('/api/v1/places/food?restaurant_id=' + this.getRestsID(), {
+        fetch(serverAddress + '/api/v1/places/food?restaurant_id=' + this.getRestsID(), {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -58,7 +60,7 @@ class Menu extends React.Component {
                 }
             } catch { } 
         })
-        fetch('/api/v1/cart/view', {
+        fetch(serverAddress + '/api/v1/cart/view', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -73,7 +75,7 @@ class Menu extends React.Component {
     }
 
     addToCart = ({id, name}) => {
-        fetch('/api/v1/cart/push?menu_item_id=' + String(id), {
+        fetch(serverAddress + '/api/v1/cart/push?menu_item_id=' + String(id), {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -101,7 +103,7 @@ class Menu extends React.Component {
     }
 
     clearBag = () => {
-        fetch('/api/v1/cart/clean', {
+        fetch(serverAddress + '/api/v1/cart/clean', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -138,7 +140,7 @@ class Menu extends React.Component {
                             </HeaderButton>
                         }
                     >
-                        Menu
+                        Меню
                     </PanelHeader>
                     <Tabs type="buttons">
                         <HorizontalScroll>
@@ -163,7 +165,7 @@ class Menu extends React.Component {
                             }
                             return (
                                 <Cell
-                                    before={<Avatar src={'' + value.photo_url} />}
+                                    before={<Avatar src={serverAddress + value.photo_url} />}
                                     description={value.description}
                                     asideContent={
                                         <Button 

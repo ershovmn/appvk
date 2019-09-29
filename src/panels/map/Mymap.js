@@ -11,6 +11,8 @@ import Icon24Done from '@vkontakte/icons/dist/24/done'
 import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
 import Icon24Back from '@vkontakte/icons/dist/24/back';
 
+import serverAddress from '../../ServerAddress'
+
 
 class Mymap extends React.Component {
     restaurants = [
@@ -148,7 +150,7 @@ class Mymap extends React.Component {
         //     zoom: this.state.zoom
         // }})
         console.log(localStorage.getItem('token'))
-        fetch('/api/v1/utilities/bounds?lat=' + String(coords[0]) + '&lon=' + String(coords[1]), {
+        fetch(serverAddress + '/api/v1/utilities/bounds?lat=' + String(coords[0]) + '&lon=' + String(coords[1]), {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -161,7 +163,7 @@ class Mymap extends React.Component {
                 this.setState({restrictMapArea: [[bounds[0], bounds[1]], [bounds[2], bounds[3]]]})
             } catch { } 
         })
-        fetch('/api/v1/places/around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
+        fetch(serverAddress + '/api/v1/places/around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -174,7 +176,7 @@ class Mymap extends React.Component {
                 this.setState({rests: rests})
             } catch { } 
         })
-        fetch('/api/v1/utilities/filters', {
+        fetch(serverAddress + '/api/v1/utilities/filters', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -187,7 +189,7 @@ class Mymap extends React.Component {
             } catch {}
         })
 
-        fetch('/api/v1/places/footcourts_around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
+        fetch(serverAddress + '/api/v1/places/footcourts_around?lat=' + String(coords[0]) + '&lon=' + String(coords[1]) + '&radius=10', {
             method: 'GET',
             headers: {
                 'Povysh-Token': localStorage.getItem('token')
@@ -491,7 +493,9 @@ class Mymap extends React.Component {
                                     })}
 
                                     {this.state.foodCourts && this.state.foodCourts.length > 0 && this.state.foodCourts.map((value, index) => {
-                                        
+                                        if(!this.state.price_tag[value.price_rating]) {
+                                            return null
+                                        }
                                         return (
                                             <Placemark
                                                 key={index}
@@ -518,7 +522,7 @@ class Mymap extends React.Component {
                         </YMaps>
                         <div style={{position: 'fixed', bottom: '50px', right: '10px'}}>
                             {/* <img src='https://vk.com/images/stickers/94/512.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/> */}
-                            <img src='http://about-telegram.ru/wp-content/uploads/2018/03/kot-persik-stickers-telegram_21.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/>
+                            <img src='https://vk.com/images/stickers/94/512.png' style={{height: '75px'}} onClick={() => this.setActiveModal('filter')}/>
                         </div>
                     </div>
                     {/* <div style={{width: "100%", height: "calc(100vh - 92px)"}}>

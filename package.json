@@ -10,7 +10,6 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-  "proxy": "https://170e4f1c.ngrok.io",
   "keywords": [],
   "author": "",
   "license": "MIT",
@@ -30,6 +29,8 @@
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-swipe-card": "^0.1.4",
+    "react-swipeable-cards": "^1.0.6",
     "react-yandex-maps": "^4.0.1"
   },
   "browserslist": [

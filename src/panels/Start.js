@@ -13,8 +13,10 @@ import Tinder from './tinder/Tinder'
 import Order from './Order/Order'
 import FastOrder from './FastOrder/FastOrder'
 
+import serverAddress from '../ServerAddress'
+
 class Start extends React.Component {
-    flag_name = true
+    flag_name = false
 
     constructor(props) {
         super(props)
@@ -70,22 +72,22 @@ class Start extends React.Component {
                         onClick={this.onStoryChange}
                         selected={this.state.activeStory === 'myorder'}
                         data-story='myorder'
-                        text={this.flag_name ? 'Order' : null}
+                        text={this.flag_name ? 'Orders' : null}
                     >
                         <Icon24Market/>
                     </TabbarItem>
-                    <TabbarItem
+                    {/* <TabbarItem
                         key='settings'
                         onClick={this.onStoryChange}
                         selected={this.state.activeStory === 'settings'}
                         data-story='settings'
                         text={this.flag_name ? 'Settings' : null }
-                    ><Icon24Settings/> </TabbarItem>
+                    ><Icon24Settings/> </TabbarItem> */}
                 </Tabbar>
                 }>
                 <Mymap id='map' viewChange={this.viewChange} trackingOrder={this.trackingOrder}/>
                 
-                <FastOrder id='quick' />
+                <FastOrder trackingOrder={this.trackingOrder} id='quick' />
                 <Tinder id='tinder' />
                 <Order id='myorder' orderID={this.state.orderID}/>
                 <View id='settings' activePanel='settings'>

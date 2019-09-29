@@ -7,6 +7,8 @@ import Icon24Back from '@vkontakte/icons/dist/24/back';
 import Icon16Done from '@vkontakte/icons/dist/16/done';
 import { throws } from 'assert';
 
+import serverAddress from '../../ServerAddress'
+
 import Menu from './Menu'
 
 class SelectRest extends React.Component {
@@ -23,6 +25,7 @@ class SelectRest extends React.Component {
 
     componentDidMount() {
         var array = []
+        console.log(this.props.rests)
         this.props.rests.map(() => {
             array.push(false)
         })
@@ -34,10 +37,12 @@ class SelectRest extends React.Component {
         this.props.rests.map(() => {
             array.push(false)
         })
+        console.log(this.props.rests)
         this.setState({checked: array})
     }
 
     render() {
+        console.log(this.props.rests)
         if(this.state.activePanel === 'menu') {
             return (
                 <Menu id={this.props.id} trackingOrder={this.props.trackingOrder} restsID={this.state.restsID} back={() => {this.setState({activePanel: 'mainSelectRest'}); this.updateArrray()}} />
@@ -54,7 +59,7 @@ class SelectRest extends React.Component {
                             </HeaderButton>
                           }
                     >
-                        Select Rest
+                        Выбор ресторана
                     </PanelHeader>
                     <List>
                         {this.props.rests.map((value, index) => {
