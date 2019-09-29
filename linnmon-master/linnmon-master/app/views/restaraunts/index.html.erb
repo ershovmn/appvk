@@ -1,0 +1,12 @@
+<p id="notice"><%= notice %></p>
+
+<h1 class="mb-3">Restaraunts <% if params[:foodcourt_id].nil? %> <%= link_to 'New Restaraunt', new_restaraunt_path, class: 'btn btn-primary' %> <% else %> in foodcourt<% end %></h1>
+
+<% unless params[:foodcourt_id].nil? %>
+  <div class="my-2"><%= link_to 'Return to foodcourts', foodcourts_path %></div>
+<% end %>
+
+<div class="col-md-10 col-lg-7 col-12">
+  <%= render @restaraunts %>
+</div>
+

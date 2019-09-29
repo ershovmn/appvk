@@ -1,0 +1,5 @@
+<h1>New Menu Item</h1>
+
+<%= render 'form', menu_item: @menu_item, restaraunt: @restaraunt %>
+
+<%= link_to 'Back', restaraunt_menu_items_path(params[:restaraunt_id]) %>

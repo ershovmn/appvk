@@ -1,0 +1,33 @@
+<div class="Box Box--condensed mb-4">
+  <div class="Box-header bg-blue-light">
+    <h3>
+      <%= foodcourt.name %>
+    </h3>
+  </div>
+  <div class="d-flex">
+    <div>
+      <img src="https://static-maps.yandex.ru/1.x/?ll=<%= foodcourt.longitude %>,<%= foodcourt.latitude %>&size=350,150&z=17&l=map&pt=<%= foodcourt.longitude %>,<%= foodcourt.latitude %>">
+    </div>
+    <div style="width: 100%">
+      <div class="Box-body" style="font-size:1.2em">
+        <%= foodcourt.description %>
+      </div>
+      <ul>
+        <li class="Box-row">
+          <b><%= foodcourt.address %></b> (<%= foodcourt.latitude %>, <%= foodcourt.longitude %>)
+        </li>
+        <li class="Box-row">
+          <b>Ценовой рейтинг</b>: <%= foodcourt.price_rating %>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="Box-footer">
+    <div class="d-flex flex-justify-between">
+      <div>
+        <%= link_to 'Restaurants', restaraunts_path(foodcourt_id: foodcourt.id), class: 'btn btn-primary' %>
+      </div>
+      <div><%= link_to 'Edit', edit_foodcourt_path(foodcourt), class: 'btn' %> <%= link_to 'Destroy', foodcourt, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %></div>
+    </div>
+  </div>
+</div>

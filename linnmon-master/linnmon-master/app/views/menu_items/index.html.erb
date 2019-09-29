@@ -1,0 +1,11 @@
+<p id="notice"><%= notice %></p>
+
+<h1 class="mb-2">Menu Items
+  <%= link_to 'New Menu Item', new_restaraunt_menu_item_path(params[:restaraunt_id]), class: 'btn btn-primary' %>
+  <%= link_to 'Menu Categories', restaraunt_menu_categories_path(params[:restaraunt_id]), class: 'btn' %>
+</h1>
+<div class="d-flex flex-wrap flex-justify-around">
+  <%= render @menu_items %>
+</div>
+
+

@@ -1,0 +1,37 @@
+<div class="Box Box--condensed mb-4">
+  <div class="Box-header bg-blue-light">
+    <h3>
+      <%= restaraunt.name %>
+    </h3>
+  </div>
+  <div class="d-flex">
+    <div>
+      <img src="https://static-maps.yandex.ru/1.x/?ll=<%= restaraunt.longitude %>,<%= restaraunt.latitude %>&size=350,150&z=17&l=map&pt=<%= restaraunt.longitude %>,<%= restaraunt.latitude %>">
+    </div>
+    <div style="width: 100%">
+      <div class="Box-body" style="font-size:1.2em">
+        <%= restaraunt.description %>
+      </div>
+      <ul>
+        <li class="Box-row">
+          <b><%= restaraunt.address %></b> (<%= restaraunt.latitude %>, <%= restaraunt.longitude %>)
+        </li>
+        <li class="Box-row">
+          <%= Cuisine.find(restaraunt.cuisine_id).name %> <b>кухня</b>
+        </li>
+        <li class="Box-row">
+          <b>Ценовой рейтинг</b>: <%= restaraunt.price_rating %>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="Box-footer">
+    <div class="d-flex flex-justify-between">
+      <div>
+        <%= link_to 'Orders', '/', class: 'btn btn-keklik' %>
+        <%= link_to 'Items', restaraunt_menu_items_path(restaraunt.id), class: 'btn btn-primary' %>
+      </div>
+      <div><%= link_to 'Edit', edit_restaraunt_path(restaraunt), class: 'btn' %> <%= link_to 'Destroy', restaraunt, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %></div>
+    </div>
+  </div>
+</div>

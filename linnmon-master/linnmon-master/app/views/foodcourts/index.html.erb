@@ -1,0 +1,41 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Foodcourts</h1>
+
+<%= render @foodcourts %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Price rating</th>
+      <th>User</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @foodcourts.each do |foodcourt| %>
+      <tr>
+        <td><%= foodcourt.address %></td>
+        <td><%= foodcourt.latitude %></td>
+        <td><%= foodcourt.longitude %></td>
+        <td><%= foodcourt.name %></td>
+        <td><%= foodcourt.description %></td>
+        <td><%= foodcourt.price_rating %></td>
+        <td><%= foodcourt.user_id %></td>
+        <td><%= link_to 'Show', foodcourt %></td>
+        <td><%= link_to 'Edit', edit_foodcourt_path(foodcourt) %></td>
+        <td><%= link_to 'Destroy', foodcourt, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Foodcourt', new_foodcourt_path %>

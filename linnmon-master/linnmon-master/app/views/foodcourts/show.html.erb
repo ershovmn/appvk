@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Address:</strong>
+  <%= @foodcourt.address %>
+</p>
+
+<p>
+  <strong>Latitude:</strong>
+  <%= @foodcourt.latitude %>
+</p>
+
+<p>
+  <strong>Longitude:</strong>
+  <%= @foodcourt.longitude %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @foodcourt.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @foodcourt.description %>
+</p>
+
+<p>
+  <strong>Price rating:</strong>
+  <%= @foodcourt.price_rating %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @foodcourt.user_id %>
+</p>
+
+<%= link_to 'Edit', edit_foodcourt_path(@foodcourt) %> |
+<%= link_to 'Back', foodcourts_path %>

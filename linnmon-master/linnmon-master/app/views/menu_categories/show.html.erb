@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @menu_category.name %>
+</p>
+
+<p>
+  <strong>Restaraunt:</strong>
+  <%= @menu_category.restaraunt_id %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @menu_category.user_id %>
+</p>
+
+<%= link_to 'Edit', edit_restaraunt_menu_category_path(params[:restaraunt_id], @menu_category.id) %> |
+<%= link_to 'Back', restaraunt_menu_categories_path(params[:restaraunt_id]) %>

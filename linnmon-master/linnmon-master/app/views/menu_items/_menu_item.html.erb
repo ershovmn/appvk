@@ -1,0 +1,23 @@
+<div class="Box box-shadow-medium col-12 col-sm-6 col-md-4 col-lg-2 mx-2 mb- Box--condensed">
+  <ul>
+    <li class="Box-row">
+      <% if menu_item.photo.attached? %>
+        <%= image_tag rails_representation_url(menu_item.photo.variant(combine_options: {  gravity: "center", resize: "300x300^", crop: "300x300+0+0" }), only_path: true), style: 'max-width:100%' %>
+      <% else %>
+        нет картинки
+      <% end %>
+    </li>
+    <li class="Box-row text-center">
+      <h4><%= menu_item.name %></h4>
+      <div class="mt-1">
+        <%= menu_item.price %> руб.
+      </div>
+    </li>
+    <li class="Box-row">
+      <%= menu_item.description %>
+    </li>
+    <li class="Box-row">
+      <%= link_to 'Edit', edit_restaraunt_menu_item_path(params[:restaraunt_id], menu_item) %> / <%= link_to 'Destroy', restaraunt_menu_item_path(params[:restaraunt_id], menu_item), method: :delete, data: { confirm: 'Are you sure?' } %>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,12 @@
+@import "@primer/css/index.scss";
+
+.title {
+  color: $gray-500;
+  font-weight: 400;
+}
+
+.menu-thing {
+  color: $gray-300;
+}
+
+.btn-keklik { @include btn-solid($text-white, $purple-400, $purple-500); }

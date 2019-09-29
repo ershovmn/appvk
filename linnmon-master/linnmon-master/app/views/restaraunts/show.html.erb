@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Address:</strong>
+  <%= @restaraunt.address %>
+</p>
+
+<p>
+  <strong>Latitude:</strong>
+  <%= @restaraunt.latitude %>
+</p>
+
+<p>
+  <strong>Longitude:</strong>
+  <%= @restaraunt.longitude %>
+</p>
+
+<p>
+  <strong>Cuisine:</strong>
+  <%= @restaraunt.cuisine_id %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @restaraunt.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @restaraunt.description %>
+</p>
+
+<p>
+  <strong>Price rating:</strong>
+  <%= @restaraunt.price_rating %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @restaraunt.user_id %>
+</p>
+
+<%= link_to 'Edit', edit_restaraunt_path(@restaraunt) %> |
+<%= link_to 'Back', restaraunts_path %>

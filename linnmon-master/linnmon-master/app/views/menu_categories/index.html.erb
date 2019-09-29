@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Menu Categories</h1>
+
+<%= render 'form', menu_category: @menu_category %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @menu_categories.each do |menu_category| %>
+      <tr>
+        <td><%= menu_category.name %></td>
+        <td><%= link_to 'Edit', edit_restaraunt_menu_category_path(params[:restaraunt_id], menu_category.id) %></td>
+        <td><%= link_to 'Destroy', restaraunt_menu_category_path(params[:restaraunt_id], menu_category.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
